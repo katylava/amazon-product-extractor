@@ -97,6 +97,60 @@ To modify the extension:
 3. Click the refresh icon on the Amazon Product Extractor card
 4. Test your changes on Amazon product pages
 
+## Testing
+
+This project includes comprehensive testing with Jest (unit tests) and Playwright (end-to-end tests).
+
+### Prerequisites
+
+Install dependencies:
+```bash
+npm install
+```
+
+### Running Tests
+
+**All tests:**
+```bash
+npm run test:all
+```
+
+**Unit tests only:**
+```bash
+npm test
+```
+
+**Unit tests with coverage:**
+```bash
+npm run test:coverage
+```
+
+**Unit tests in watch mode (for development):**
+```bash
+npm run test:watch
+```
+
+**End-to-end tests:**
+```bash
+npm run test:e2e
+```
+
+### Test Coverage
+
+The test suite covers:
+- **Price extraction logic** - Amazon DOM parsing and price calculation
+- **Weight parsing** - Multiple unit types (lb, oz, kg, g) and conversions
+- **Price per weight calculations** - Accurate math with proper rounding
+- **Edge cases** - Invalid inputs, missing data, malformed prices
+- **Browser integration** - Real Chrome extension functionality
+
+### Test Files
+
+- `tests/priceExtraction.simple.test.js` - Unit tests for core logic
+- `tests/e2e/extension.test.js` - End-to-end browser tests
+- `jest.config.js` - Jest configuration
+- `playwright.config.js` - Playwright configuration
+
 ## Privacy
 
 This extension:
