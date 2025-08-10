@@ -44,37 +44,114 @@ function extractProductName() {
 }
 
 function extractPrice() {
+    // Priority order: most specific to most general selectors
     const selectors = [
+        // Highest priority: specific selectors for the correct price
+        '#sns-tiered-price .priceToPay .a-offscreen',
+        '.priceToPay .a-offscreen',
+        '#sns-tiered-price .a-price .a-offscreen',
+        
+        // Current price selectors (medium priority)
         '.a-price.a-text-price.a-size-medium.apexPriceToPay .a-offscreen',
-        '.a-price-whole',
-        '.a-price.a-text-price .a-offscreen',
-        '.a-price-symbol + .a-price-whole',
+        '.a-price-current .a-offscreen',
         '[data-automation-id="product-price"] .a-price .a-offscreen',
+        
+        // Skip problematic selector that returns $4.08
+        // '.a-price.a-text-price .a-offscreen',  // COMMENTED OUT - returns wrong price
+        
+        // Alternative current price selectors
         '.a-price.a-text-normal .a-offscreen',
-        '.a-price-current .a-offscreen'
+        '.a-price .a-offscreen'
     ];
     
+    // Try each selector in priority order
     for (const selector of selectors) {
         const element = document.querySelector(selector);
         if (element && element.textContent.trim()) {
             const priceText = element.textContent.trim();
+            console.log(`Found price with selector "${selector}": "${priceText}"`);
+            
+            // Extract price from text (handle formats like $44.08, 44.08, etc.)
             const priceMatch = priceText.match(/[\d,]+\.?\d*/);
             if (priceMatch) {
-                return parseFloat(priceMatch[0].replace(/,/g, ''));
+                const price = parseFloat(priceMatch[0].replace(/,/g, ''));
+                // Skip unreasonably low prices (likely fragments)
+                if (price >= 0.01) {
+                    console.log(`Extracted price: $${price}`);
+                    return price;
+                }
             }
         }
     }
     
-    const wholePriceEl = document.querySelector('.a-price-whole');
-    const fractionPriceEl = document.querySelector('.a-price-fraction');
-    if (wholePriceEl && fractionPriceEl) {
-        const whole = wholePriceEl.textContent.replace(/[^\d]/g, '');
-        const fraction = fractionPriceEl.textContent.replace(/[^\d]/g, '');
-        if (whole && fraction) {
-            return parseFloat(`${whole}.${fraction}`);
+    // Try to find Amazon's specific price structure
+    const priceElements = document.querySelectorAll('.a-price');
+    for (const priceEl of priceElements) {
+        const wholePriceEl = priceEl.querySelector('.a-price-whole');
+        const fractionPriceEl = priceEl.querySelector('.a-price-fraction');
+        
+        if (wholePriceEl && fractionPriceEl) {
+            // Get the full text content, handling nested elements properly
+            const wholeText = wholePriceEl.textContent || wholePriceEl.innerText || '';
+            const fractionText = fractionPriceEl.textContent || fractionPriceEl.innerText || '';
+            
+            // Extract only digits from each part - but handle the decimal point issue
+            // The whole part might contain "44." so we need to extract just the number part before the decimal
+            let whole = wholeText.replace(/[^\d]/g, '');
+            const fraction = fractionText.replace(/[^\d]/g, '');
+            
+            // Special handling: if wholeText contains digits followed by a decimal, extract just the digits
+            const wholeMatch = wholeText.match(/(\d+)/);
+            if (wholeMatch) {
+                whole = wholeMatch[1];
+            }
+            
+            console.log(`DEBUG: wholeText="${wholeText}", fractionText="${fractionText}", whole="${whole}", fraction="${fraction}"`);
+            
+            if (whole && fraction) {
+                const price = parseFloat(`${whole}.${fraction}`);
+                console.log(`Extracted price from parts (whole: "${wholeText}" -> "${whole}", fraction: "${fractionText}" -> "${fraction}"): $${price}`);
+                
+                // Validate price range
+                if (price >= 0.01 && price <= 10000) {
+                    return price;
+                }
+            }
+        }
+        
+        // Alternative: try to get the full price from the visible aria-hidden span
+        const visiblePriceSpan = priceEl.querySelector('[aria-hidden="true"]');
+        if (visiblePriceSpan) {
+            const fullPriceText = visiblePriceSpan.textContent || '';
+            console.log(`DEBUG: Found aria-hidden span with text: "${fullPriceText}"`);
+            
+            // Try to extract price pattern like "$44.08"
+            const priceMatch = fullPriceText.match(/\$?(\d+\.?\d*)/);
+            if (priceMatch) {
+                const price = parseFloat(priceMatch[1]);
+                if (price >= 0.01 && price <= 10000) {
+                    console.log(`Extracted price from aria-hidden span: $${price}`);
+                    return price;
+                }
+            }
         }
     }
     
+    // Last resort: search for any price pattern in the page
+    const priceContainers = document.querySelectorAll('[class*="price"], [id*="price"]');
+    for (const container of priceContainers) {
+        const text = container.textContent;
+        const priceMatch = text.match(/\$?([\d,]+\.?\d+)/);
+        if (priceMatch) {
+            const price = parseFloat(priceMatch[1].replace(/,/g, ''));
+            if (price >= 0.01 && price <= 10000) { // Reasonable price range
+                console.log(`Found price in container: $${price}`);
+                return price;
+            }
+        }
+    }
+    
+    console.log('No price found');
     return null;
 }
 

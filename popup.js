@@ -23,7 +23,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('Please navigate to an Amazon product page first.');
             }
             
-            const response = await chrome.tabs.sendMessage(tab.id, { action: 'extractProduct' });
+            // Try to inject content script if it's not already there
+            try {
+                await chrome.scripting.executeScript({
+                    target: { tabId: tab.id },
+                    files: ['content.js']
+                });
+            } catch (injectionError) {
+                // Content script might already be injected, continue
+                console.log('Content script injection attempt:', injectionError.message);
+            }
+            
+            // Add retry logic with timeout
+            let response = null;
+            let attempts = 0;
+            const maxAttempts = 3;
+            
+            while (attempts < maxAttempts && !response) {
+                try {
+                    response = await chrome.tabs.sendMessage(tab.id, { action: 'extractProduct' });
+                    break;
+                } catch (messageError) {
+                    attempts++;
+                    console.log(`Message attempt ${attempts} failed:`, messageError.message);
+                    
+                    if (attempts < maxAttempts) {
+                        // Wait a bit before retrying
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    } else {
+                        throw new Error('Failed to communicate with the page. Please refresh the page and try again.');
+                    }
+                }
+            }
             
             if (!response) {
                 throw new Error('Failed to extract product information. Make sure you are on a valid Amazon product page.');
