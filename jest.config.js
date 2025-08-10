@@ -11,7 +11,7 @@ module.exports = {
   collectCoverageFrom: [
     'content.js',
     'popup.js',
-    '!test.html'
+    '!tests/**/*.html'
   ],
   setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
   verbose: true
