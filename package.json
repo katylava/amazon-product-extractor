@@ -1,0 +1,22 @@
+{
+  "name": "amazon-product-extractor",
+  "version": "1.0.0",
+  "description": "A Chrome extension that extracts Amazon product information and copies it as rich text with tabs for spreadsheet compatibility.",
+  "main": "background.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:all": "npm test && npm run test:e2e"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.54.2",
+    "jest": "^30.0.5",
+    "jest-environment-jsdom": "^30.0.5",
+    "jsdom": "^26.1.0"
+  }
+}
