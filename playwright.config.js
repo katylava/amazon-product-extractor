@@ -11,14 +11,14 @@ module.exports = defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'https://www.amazon.com',
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
   },
 
   projects: [
     {
       name: 'chromium-extension',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         channel: 'chromium',
         launchOptions: {
