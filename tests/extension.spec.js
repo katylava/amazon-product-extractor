@@ -50,8 +50,8 @@ test.describe('Amazon Product Extractor Extension', () => {
 
     // Wait for either results or error to appear
     await Promise.race([
-      expect(popup.locator('#results')).toBeVisible({ timeout: 15000 }),
-      expect(popup.locator('#error')).toBeVisible({ timeout: 15000 })
+      expect(popup.locator('#results')).toBeVisible({ timeout: 20000 }),
+      expect(popup.locator('#error')).toBeVisible({ timeout: 20000 })
     ]);
 
     // If we got results, verify the data

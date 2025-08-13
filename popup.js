@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add retry logic with timeout
             let response = null;
             let attempts = 0;
-            const maxAttempts = 3;
+            const maxAttempts = 10;
 
             while (attempts < maxAttempts && !response) {
                 try {
@@ -162,7 +162,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const weight = data.weight ? `${data.weight.value} ${data.weight.unit}` : 'Weight not found';
         const pricePerWeight = data.pricePerWeight ? data.pricePerWeight.display : 'Cannot calculate';
 
-        const html = `<a href="${data.url}" target="_blank">${productName}</a>\t${price}\t${weight}\t${pricePerWeight}`;
+        // const html = `<a href="${data.url}" target="_blank">${productName}</a>\t${price}\t${weight}\t${pricePerWeight}`;
+
+        let html = `
+            <table><tr>
+            <td><a href="${data.url}" target="_blank">${productName}</a></td>
+            <td>${price}</td>
+            <td>${weight}</td>
+            <td>${pricePerWeight}</td>
+            </tr></table>
+        `;
+
+
 
         return html;
     }

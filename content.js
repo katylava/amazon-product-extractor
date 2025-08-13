@@ -47,21 +47,18 @@ function extractPrice() {
     // Priority order: most specific to most general selectors
     const selectors = [
         // Highest priority: specific selectors for the correct price
-        '#sns-tiered-price .priceToPay .a-offscreen',
-        '.priceToPay .a-offscreen',
-        '#sns-tiered-price .a-price .a-offscreen',
-
-        // Current price selectors (medium priority)
-        '.a-price.a-text-price.a-size-medium.apexPriceToPay .a-offscreen',
-        '.a-price-current .a-offscreen',
-        '[data-automation-id="product-price"] .a-price .a-offscreen',
-
-        // Skip problematic selector that returns $4.08
-        // '.a-price.a-text-price .a-offscreen',  // COMMENTED OUT - returns wrong price
+        '#corePriceDisplay_desktop_feature_div > div.a-section > .priceToPay',
+        '#corePriceDisplay_desktop_feature_div .priceToPay',
 
         // Alternative current price selectors
-        '.a-price.a-text-normal .a-offscreen',
-        '.a-price .a-offscreen'
+        // '#sns-tiered-price .priceToPay .a-offscreen',
+        // '.priceToPay .a-offscreen',
+        // '#sns-tiered-price .a-price .a-offscreen',
+        // '.a-price.a-text-price.a-size-medium.apexPriceToPay .a-offscreen',
+        // '.a-price-current .a-offscreen',
+        // '[data-automation-id="product-price"] .a-price .a-offscreen',
+        // '.a-price.a-text-normal .a-offscreen',
+        // '.a-price .a-offscreen'
     ];
 
     // Try each selector in priority order
