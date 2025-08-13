@@ -2,6 +2,8 @@
 
 A Chrome extension that extracts Amazon product information and copies it as rich text with tabs for spreadsheet compatibility.
 
+*This project was developed by [Claude Code](https://docs.anthropic.com/en/docs/claude-code) with guidance from katylava.*
+
 ## Features
 
 - **Product Information Extraction**: Automatically extracts product name, price, and weight from Amazon product pages
